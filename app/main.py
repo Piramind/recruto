@@ -10,4 +10,4 @@ async def hello(request: Request, name: str = "Rekruto", message: str = "Дав�
     return f'Hello {name}! {nl} {message}!'
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1")
+    uvicorn.run(app)
