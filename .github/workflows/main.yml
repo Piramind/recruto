@@ -1,0 +1,36 @@
+name: Deploy to server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Build Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/rekrut:latest # change this to your Docker username and app name
+        build-args: |
+          APP_PORT=8000 # specify the app port
+          WORKERS=2 # specify the number of Gunicorn workers
+      
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }} # specify the host server IP or domain name
+        username: ${{ secrets.USERNAME }} # specify the SSH username
+        password: ${{ secrets.PASSWORD }} # specify the SSH password
+        port: ${{ secrets.PORT }} # specify the SSH port
+        script: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker stop rekrut || true
+          docker rm rekrut || true
+          docker pull your-docker-username/rekrut:latest # change this to your Docker username and app name
+          docker run -d --name rekrut -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/rekrut:latest
