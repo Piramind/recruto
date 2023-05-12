@@ -5,9 +5,10 @@ app = FastAPI()
 
 @app.get("/")
 async def hello(request: Request, name: str = "Rekruto", message: str = "Давай дружить!"):
-    nl = '\n'
+    #nl = '\n'
     # Формируем сообщение и выводим его на странице
-    return f'Hello {name}! {nl} {message}!'
+    #return f'Hello {name}! {nl} {message}!'
+    return templates.TemplateResponse("page.html")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1")
